@@ -553,11 +553,3 @@ import { CachePlugin } from "@mzhub/gqp/cache";
 MIT
 
 ---
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-#   G Q P  
- #   G Q P  
- #   G Q P  
- 

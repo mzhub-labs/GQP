@@ -1,0 +1,146 @@
+{
+    "name": "@mzhub/gqp",
+    "version": "0.1.0",
+    "description": "The Universal Agent Data Layer - Consolidate 50+ tools into 1 dynamic navigable tool",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./prisma": {
+            "types": "./dist/adapters/prisma/index.d.ts",
+            "import": "./dist/adapters/prisma/index.mjs",
+            "require": "./dist/adapters/prisma/index.js"
+        },
+        "./rest": {
+            "types": "./dist/adapters/rest/index.d.ts",
+            "import": "./dist/adapters/rest/index.mjs",
+            "require": "./dist/adapters/rest/index.js"
+        },
+        "./mcp": {
+            "types": "./dist/bridges/mcp/index.d.ts",
+            "import": "./dist/bridges/mcp/index.mjs",
+            "require": "./dist/bridges/mcp/index.js"
+        },
+        "./openai": {
+            "types": "./dist/bridges/openai/index.d.ts",
+            "import": "./dist/bridges/openai/index.mjs",
+            "require": "./dist/bridges/openai/index.js"
+        },
+        "./langchain": {
+            "types": "./dist/bridges/langchain/index.d.ts",
+            "import": "./dist/bridges/langchain/index.mjs",
+            "require": "./dist/bridges/langchain/index.js"
+        },
+        "./vercel-ai": {
+            "types": "./dist/bridges/vercel-ai/index.d.ts",
+            "import": "./dist/bridges/vercel-ai/index.mjs",
+            "require": "./dist/bridges/vercel-ai/index.js"
+        },
+        "./vector": {
+            "types": "./dist/plugins/vector/index.d.ts",
+            "import": "./dist/plugins/vector/index.mjs",
+            "require": "./dist/plugins/vector/index.js"
+        },
+        "./temporal": {
+            "types": "./dist/plugins/temporal/index.d.ts",
+            "import": "./dist/plugins/temporal/index.mjs",
+            "require": "./dist/plugins/temporal/index.js"
+        },
+        "./cache": {
+            "types": "./dist/plugins/cache/index.d.ts",
+            "import": "./dist/plugins/cache/index.mjs",
+            "require": "./dist/plugins/cache/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "pack": "npm run build && npm pack",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "lint": "eslint src",
+        "typecheck": "tsc --noEmit",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "ai",
+        "agents",
+        "llm",
+        "mcp",
+        "langchain",
+        "openai",
+        "graph",
+        "data-layer",
+        "tools",
+        "prisma",
+        "graphql"
+    ],
+    "author": "MZ Hub",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MZHub-Labs/gqp.git"
+    },
+    "homepage": "https://github.com/MZHub-Labs/gqp#readme",
+    "bugs": {
+        "url": "https://github.com/MZHub-Labs/gqp/issues"
+    },
+    "devDependencies": {
+        "@modelcontextprotocol/sdk": "^1.25.3",
+        "@prisma/client": "^7.3.0",
+        "@types/node": "^22.13.1",
+        "langchain": "^1.2.16",
+        "@langchain/core": "^1.1.18",
+        "zod": "^4.3.6",
+        "ai": "^6.0.67",
+        "@ai-sdk/openai": "^3.0.25",
+        "chrono-node": "^2.9.0",
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "peerDependencies": {
+        "@modelcontextprotocol/sdk": ">=1.0.0",
+        "@prisma/client": ">=5.0.0",
+        "@pinecone-database/pinecone": ">=5.0.0",
+        "langchain": ">=1.0.0",
+        "@langchain/core": ">=1.0.0",
+        "chrono-node": ">=2.0.0",
+        "ai": ">=3.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@modelcontextprotocol/sdk": {
+            "optional": true
+        },
+        "@prisma/client": {
+            "optional": true
+        },
+        "@pinecone-database/pinecone": {
+            "optional": true
+        },
+        "langchain": {
+            "optional": true
+        },
+        "@langchain/core": {
+            "optional": true
+        },
+        "chrono-node": {
+            "optional": true
+        },
+        "ai": {
+            "optional": true
+        }
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
