@@ -109,6 +109,93 @@ await graph.handleToolCall({
 
 ---
 
+## Why Relations Matter
+
+Relations are the key to making your agent **smarter, not just smaller**. When you define relations between nodes, GQP uses them in two ways that directly improve agent behavior:
+
+**1. Discovery** - When the agent explores or navigates your graph, relations appear as connected nodes. This gives the agent a map of your data model, so it understands that Products have Vendors, Orders have Customers, etc.
+
+```javascript
+// Agent navigates to Product and sees:
+// {
+//   operations: ['search', 'getDetails'],
+//   relations: [{ name: 'vendor', target: 'Vendor' }]
+// }
+// Now the agent KNOWS it can jump to Vendor from Product
+```
+
+**2. Guided next steps** - After the agent executes a tool, the response automatically includes suggestions based on relations. This helps the agent follow logical workflows without you having to prompt-engineer the path.
+
+```javascript
+// Agent searches for products, response includes:
+// {
+//   data: [...results...],
+//   suggestions: ['Navigate to Vendor (vendor)', 'Navigate to Category (category)']
+// }
+// The agent now has a natural next step instead of guessing
+```
+
+Without relations, the agent can still explore and execute tools, but it has no sense of how your data connects. With well-mapped relations, the agent can chain operations together intelligently, like finding a product, then checking the vendor, then looking at the vendor's other products.
+
+---
+
+## Best Practices
+
+### Designing Your Graph
+
+**Group related operations under one node.** Each node should represent a logical entity (Product, Order, User), not individual operations. This gives the agent a clear mental model of your data.
+
+```javascript
+// Good: Operations grouped by entity
+Product: {
+  tools: { search: ..., getDetails: ..., getReviews: ... }
+}
+
+// Avoid: One node per operation
+ProductSearch: { tools: { run: ... } }
+ProductDetails: { tools: { run: ... } }
+```
+
+**Map all meaningful relationships.** If two entities are connected in your data, define the relation. The more connections, the better the agent navigates.
+
+```javascript
+Product: {
+  relations: {
+    vendor: 'Vendor',      // Product belongs to a vendor
+    category: 'Category',  // Product is in a category
+    orders: 'Order',       // Product appears in orders
+  }
+}
+```
+
+**Write clear node descriptions.** The agent sees these when exploring. A good description helps it pick the right node on the first try.
+
+```javascript
+// Good: Tells the agent what it can find here
+Product: {
+  description: "Search product catalog by name, category, or price range";
+}
+
+// Avoid: Too vague to be useful
+Product: {
+  description: "Products";
+}
+```
+
+**Keep action tools separate.** GQP is ideal for read/query tools. Keep write operations (create order, update cart, send message) as standalone tools so the agent treats them as deliberate actions.
+
+```javascript
+const agent = createReactAgent({
+  tools: [
+    gqpTool, // All read/query tools wrapped
+    createOrderTool, // Standalone: explicit action
+    addToCartTool, // Standalone: explicit action
+  ],
+});
+```
+
+---
+
 ## Framework Integrations
 
 ### MCP (Model Context Protocol)
@@ -224,6 +311,59 @@ const agent = createReactAgent({
 { action: 'execute', node: 'Product', operation: 'search', params: { query: 'rice' } }
 // -> Calls searchProductsTool.invoke({ query: 'rice' })
 ```
+
+### Any Framework (Zero Dependencies)
+
+**Not using LangChain?** Use `createToolWrapper` to get the raw wrapper with zero framework dependencies. It works with plain functions, custom tool objects, or tools from any SDK:
+
+```javascript
+import { createToolWrapper } from "@mzhub/gqp/langchain";
+
+const wrapper = createToolWrapper({
+  graph: {
+    Product: {
+      description: "Product catalog",
+      tools: {
+        // Plain async functions work
+        search: async (params) => {
+          const results = await db.products.find(params);
+          return results;
+        },
+        // Objects with .invoke() work (LangChain, etc)
+        getDetails: myLangChainTool,
+        // Objects with .func() work
+        getReviews: { func: async (params) => fetchReviews(params) },
+      },
+      relations: { vendor: "Vendor", category: "Category" },
+    },
+    Vendor: {
+      description: "Vendor directory",
+      tools: {
+        search: async (params) => db.vendors.find(params),
+      },
+    },
+  },
+});
+
+// Use with any framework - Gemini, OpenAI, custom agents, etc.
+const result = await wrapper.handleToolCall({
+  action: "explore",
+});
+
+const data = await wrapper.handleToolCall({
+  action: "execute",
+  node: "Product",
+  operation: "search",
+  params: { query: "rice" },
+});
+```
+
+The wrapper accepts any tool that satisfies one of these patterns:
+| Tool Format | Example | Works With |
+| --- | --- | --- |
+| Plain `async function` | `async (params) => { ... }` | Any framework |
+| Object with `.invoke()` | LangChain tools, custom classes | LangChain, custom |
+| Object with `.func()` | `{ func: async (p) => ... }` | Custom tools |
 
 ### Vercel AI SDK
 
